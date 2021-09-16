@@ -1,0 +1,97 @@
+
+这个题目实际上考的是计算机加法进位的原理：
+
+我最开始的错误做法：先将链表转为真正的数字，再求和，再将数字转换为链表，本方法在数字超过lint或者ong范围后，直接失效了，解决不了！！！
+错误解法代码：
+public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+            //先将l1和2调转指针，变为int再求和
+//            l1 = reverse(l1);//342,个位十位百位
+//            l2 = reverse(l2);
+            int num1 = l1.val;//个位
+            int num2 = l2.val;
+            int t = 1;//次方
+            l1 = l1.next;//下移
+            l2 = l2.next;
+            while(l1 != null){
+                num1 += l1.val * Math.pow(10, t);
+                t++;
+                l1 = l1.next;
+            }
+            t = 1;
+            while(l2 != null){
+                num2 += l2.val * Math.pow(10, t);
+                t++;
+                l2 = l2.next;
+            }
+            int sum = num1 + num2;//求和
+
+            //将sun制作为链表，然后调转指针
+            ListNode lSum = new ListNode(sum % 10);//个位
+            ListNode cur = lSum;
+            while(sum / 10 != 0){
+                sum /= 10;//不断除10，再%10拿到余数
+                ListNode newNode = new ListNode(sum % 10);//
+                //直到sum变0就算了
+                cur.next = newNode;//接下去
+                cur = cur.next;
+            }
+            //lSum = reverse(lSum);//翻转即结果
+
+            return lSum;//结果返回
+        }
+
+虽然能测试通过99%的样例，但是还有3个通不过，我就思索新方法……
+
+正确解法：后来我才想通了，这个玩意每一个位相加，最大9+9==18，那进位就是1，本位就是8，本位8做一个节点，进位1拿到下一个节点求和用，链表不断地往下加就行，最后把进位生成节点放好。
+正确解法的代码：
+public ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
+            //两个链表每个位置相加，取余作为本节点的值，取整作为下一个节点要加的值
+            ListNode cur1 = l1;
+            ListNode cur2 = l2;
+            int value = cur1.val + cur2.val;
+            cur1 = cur1.next;
+            cur2 = cur2.next;//共进退
+
+            ListNode res = new ListNode(value % 10);//先加个位
+            ListNode cur3 = res;
+            int C = value / 10;//进位
+
+            while(cur1 !=null && cur2 != null){
+                //保证不越界
+                value = cur1.val + cur2.val + C;
+                //个位，本节点
+                ListNode newNode = new ListNode(value % 10);
+                cur3.next = newNode;
+
+                //十位，下一个节点的进位
+                C = value / 10;
+                cur1 = cur1.next;
+                cur2 = cur2.next;//共进退
+                cur3 = cur3.next;
+            }
+            while (cur2 != null){//不等长，l2更长
+                value = cur2.val + C;
+                ListNode newNode = new ListNode(value % 10);
+                cur3.next = newNode;
+                //十位，下一个节点的进位
+                C = value / 10;
+                cur2 = cur2.next;//共进退
+                cur3 = cur3.next;
+            }
+            while (cur1 != null) {//不等长，l1更长
+                value = cur1.val + C;
+                ListNode newNode = new ListNode(value % 10);
+                cur3.next = newNode;
+                //十位，下一个节点的进位
+                C = value / 10;
+                cur1 = cur1.next;//共进退
+                cur3 = cur3.next;
+            }
+            if (C != 0) {
+                ListNode newNode = new ListNode(C);
+                cur3.next = newNode;
+            }
+
+            return res;
+        }
+
