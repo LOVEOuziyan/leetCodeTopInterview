@@ -1,9 +1,23 @@
-
 这个题目实际上考的是计算机加法进位的原理：
 
-我最开始的错误做法：先将链表转为真正的数字，再求和，再将数字转换为链表，本方法在数字超过lint或者ong范围后，直接失效了，解决不了！！！
-错误解法代码：
-public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+额，首先是审题：我最开始以为链表是顺序排放的，然后我就考虑写一个翻转链表的函数，搞了半天测试代码告诉我是错的！！！我跪了 708变为807了，后来我才发现审题出问题了……………… 链表翻转函数，以后还会用到的
+
+public ListNode reverse(ListNode head){
+            //翻转链表指针的函数
+            ListNode pre = null;
+            ListNode next = null;//操作head，next和pre都是指引
+            while(head != null){
+                next = head.next;
+                head.next = pre;//调转
+                pre = head;
+                head = next;//pre和head依次往下移动
+            }
+            return pre;//最后pre在尾部
+        }
+我最开始的错误做法：先将链表转为真正的数字，再求和，再将数字转换为链表，本方法在数字超过lint或者ong范围后，直接失效了，解决不了！！！ 错误解法代码
+
+
+        public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
             //先将l1和2调转指针，变为int再求和
 //            l1 = reverse(l1);//342,个位十位百位
 //            l2 = reverse(l2);
@@ -42,8 +56,8 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 
 虽然能测试通过99%的样例，但是还有3个通不过，我就思索新方法……
 
-正确解法：后来我才想通了，这个玩意每一个位相加，最大9+9==18，那进位就是1，本位就是8，本位8做一个节点，进位1拿到下一个节点求和用，链表不断地往下加就行，最后把进位生成节点放好。
-正确解法的代码：
+正确解法：后来我才想通了，这个玩意每一个位相加，最大9+9==18，那进位就是1，本位就是8，本位8做一个节点，进位1拿到下一个节点求和用，链表不断地往下加就行，最后把进位生成节点放好。 正确解法的代码：
+
 public ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
             //两个链表每个位置相加，取余作为本节点的值，取整作为下一个节点要加的值
             ListNode cur1 = l1;
@@ -94,4 +108,3 @@ public ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
 
             return res;
         }
-
